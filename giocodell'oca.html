@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+      /* Impostazioni per il corpo del documento */
+            body 
+            {
+                margin: 0; /* Imposta il margine a zero */
+                padding: 0; /* Imposta il padding a zero */
+                display: flex; /* Utilizza il layout flessibile */
+                flex-direction: column; /* Orienta i figli in una colonna */
+                align-items: center; /* Allinea gli elementi al centro */
+                font-family: Arial, sans-serif; /* Tipo di carattere */
+            }
+
+            /* Contenitore del tabellone */
+            .tabellone-container 
+            {
+                display: flex; /* Utilizza il layout flessibile */
+                justify-content: center; /* Allinea gli elementi al centro sull'asse principale */
+                margin-top: 150px; /* Margine superiore di 150 pixel */
+                overflow-x: auto; /* Abilita lo scrolling orizzontale */
+                background-image: url("oca2.jpg"); /* Imposta un'immagine di sfondo */
+                background-position: center; /* Posiziona l'immagine al centro */
+                background-repeat: no-repeat; /* Non ripete l'immagine */
+                background-size: cover; /* Adatta l'immagine alla dimensione del contenitore */
+                visibility: hidden; /* Inizialmente nascosto */
+            }
+
+            /* Rende visibile il tabellone */
+            .tabellone-container.visibile 
+            {
+                visibility: visible; /* Rende visibile il contenitore */
+            }
+
+            /* Tabellone del gioco */
+            .tabellone 
+            {
+                display: flex; /* Utilizza il layout flessibile */
+                flex-wrap: wrap; /* Consente il wrap degli elementi */
+                max-width: 600px; /* Larghezza massima del tabellone */
+            }
+
+            /* Riga del tabellone */
+            .fila 
+            {
+                display: flex; /* Utilizza il layout flessibile */
+                width: 100%; /* Occupa tutta la larghezza disponibile */
+            }
+
+            /* Riga del tabellone invertita */
+            .fila.reversed 
+            {
+                flex-direction: row-reverse; /* Orienta i figli in una riga invertita */
+            }
+
+            /* Singola casella del tabellone */
+            .casella 
+            {
+                width: 60px; /* Larghezza della casella */
+                height: 60px; /* Altezza della casella */
+                box-sizing: border-box; /* Il box-sizing include il bordo e il padding nella larghezza e nell'altezza */
+                display: flex; /* Utilizza il layout flessibile */
+                justify-content: center; /* Allinea il contenuto al centro sull'asse principale */
+                align-items: center; /* Allinea il contenuto al centro sull'asse trasversale */
+                font-size: 0.00001px; /* Dimensione del testo molto piccola */
+                position: relative; /* Posizione relativa all'interno del contenitore padre */
+                border: none; /* Nessun bordo */
+            }
+
+            /* Icona del giocatore */
+            .giocatore 
+            {
+                font-size: 35px; /* Dimensione del testo per l'icona del giocatore */
+                position: absolute; /* Posizione assoluta rispetto al contenitore padre */
+                top: 50%; /* Posiziona l'elemento al 50% rispetto al bordo superiore del contenitore padre */
+                left: 50%; /* Posiziona l'elemento al 50% rispetto al bordo sinistro del contenitore padre */
+                transform: translate(-50%, -50%); /* Trasla l'elemento di -50% rispetto alla sua larghezza e altezza */
+            }
+
+            /* Pulsante generico */
+            button 
+            {
+                margin: 5px; /* Margine di 5 pixel */
+                padding: 10px 20px; /* Padding di 10 pixel sopra e sotto, 20 pixel a sinistra e destra */
+                font-size: 16px; /* Dimensione del testo */
+            }
+
+            /* Pulsante per il turno del giocatore */
+            #bottone-giocatore 
+            {
+                display: none; /* Inizialmente nascosto */
+            }
+
+            /* Finestra modale */
+            .modal 
+            {
+                display: none; 
+                position: fixed; 
+                top: 0; 
+                left: 0; 
+                width: 100%;
+                height: 100%; 
+                background-color: rgba(0, 0, 0, 0.5); 
+                z-index: 9999; 
+            }
+
+            /* Contenuto della finestra modale */
+            .modal-content 
+            {
+                position: absolute; 
+                top: 50%; 
+                left: 50%; 
+                transform: translate(-50%, -50%); 
+                background-color: white; 
+                padding: 20px; 
+            }
+
+            /* Sezione per il dado */
+            .dado 
+            {
+                margin-top: 20px; /* Margine superiore di 20 pixel */
+            }
+
+            /* Immagine del dado */
+            .dado img 
+            {
+                width: 100px; /* Larghezza dell'immagine */
+                height: 100px; /* Altezza dell'immagine */
+            }
+
+            /* Pulsante "chiedigiocatori" */
+            .chiedigiocatori 
+            {
+                width: 500px; /* Larghezza del pulsante */
+                height: 200px; /* Altezza del pulsante */
+                font-size: 70px; /* Dimensione del testo */
+            }
+
+
+    </style>
+</head>
+
+<body class="sfondo">
+    <button class="chiedigiocatori" onclick="chiediNumeroGiocatori()">Inizia il Gioco</button>
+    <div class="tabellone-container">
+        <div id="tabellone"></div>
+    </div>
+    <div id="bottone-giocatore">
+        <button onclick="muoviGiocatore()">Prossimo Giocatore</button>
+    </div>
+
+    <div class="dado">
+        <img id="immagine-dado" src="" alt="Dado">
+    </div>
+
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <h2 id="messaggioVittoria"></h2>
+            <button onclick="chiudiModale()">Chiudi</button>
+        </div>
+    </div>
+
+    <script>
+        var numGiocatori = 0;
+        var posizioneGiocatori = [];
+        var giocatoreCorrente = 0;
+        var pedineGiocatori = ["black", "red", "blue", "purple"];
+
+        function chiediNumeroGiocatori() 
+        {
+            // Chiede all'utente di inserire il numero di giocatori
+            numGiocatori = prompt("Inserisci il numero di giocatori (da 1 a 4):");         
+            // Controlla se il numero inserito è valido
+            if (numGiocatori < 1 || numGiocatori > 4 || isNaN(numGiocatori)) 
+            {
+                // Mostra un messaggio di errore e richiama la funzione per chiedere di nuovo
+                alert("Inserisci un numero valido di giocatori!");
+                chiediNumeroGiocatori();
+            } else 
+            {
+                // Nasconde il pulsante di inizio gioco
+                document.querySelector('button').style.display = 'none';
+                // Genera il tabellone di gioco
+                generaTabellone();
+                // Rende visibile il contenitore del tabellone
+                document.querySelector('.tabellone-container').classList.add('visibile');
+                // Mostra il pulsante per il turno del prossimo giocatore
+                document.getElementById('bottone-giocatore').style.display = 'block';
+                // Inizializza la posizione di ciascun giocatore a 0
+                for (var a = 0; a < numGiocatori; a++) 
+                {
+                    posizioneGiocatori.push(0);
+                }
+            }
+        }
+
+
+       /* Funzione per generare il tabellone di gioco */
+        function generaTabellone() 
+        {
+            var tabelloneHTML = ""; // Variabile per memorizzare il markup HTML del tabellone           
+            // Ciclo per generare le righe del tabellone
+            for (var i = 9; i >= 0; i--) 
+            {
+                // Verifica se l'indice della riga è pari o dispari
+                if (i % 2 == 0) 
+                {
+                    tabelloneHTML += "<div class='fila'>"; // Aggiunge una riga al tabellone
+                } else 
+                {
+                    tabelloneHTML += "<div class='fila reversed'>"; // Aggiunge una riga al tabellone con direzione invertita
+                }
+                // Ciclo per generare le caselle all'interno della riga
+                for (var j = 0; j < 10; j++) 
+                {
+                    var numeroCasella = i * 10 + j + 1; // Calcola il numero della casella
+                    tabelloneHTML += "<div class='casella' data-numero='" + numeroCasella + "'></div>"; // Aggiunge una casella al tabellone con il numero corrispondente
+                }
+                tabelloneHTML += "</div>"; // Chiude la riga del tabellone
+            }
+            // Inserisce il markup HTML del tabellone nel documento HTML
+            document.getElementById("tabellone").innerHTML = tabelloneHTML;
+            // Chiama la funzione per disegnare il tabellone
+            disegnaTabellone();
+        }
+
+
+        /* Funzione per muovere il giocatore */
+        function muoviGiocatore() 
+        {
+            var dado = Math.floor(Math.random() * 6) + 1; // Genera un numero casuale da 1 a 6 per il dado
+            var immagineDado = document.getElementById("immagine-dado"); // Seleziona l'elemento immagine del dado
+
+            // Aggiorna l'immagine del dado
+            immagineDado.src = "dado" + dado + ".png"; // Imposta il percorso dell'immagine del dado
+            immagineDado.alt = "Dado che mostra " + dado; // Imposta l'attributo 'alt' dell'immagine del dado
+
+            var avanzamento = dado; // Imposta l'avanzamento del giocatore in base al risultato del dado
+            posizioneGiocatori[giocatoreCorrente] += avanzamento; // Aggiorna la posizione del giocatore corrente
+
+            // Utilizza un'interruzione per controllare eventuali caselle speciali
+            switch (posizioneGiocatori[giocatoreCorrente]) 
+            {
+                case 7:
+                    posizioneGiocatori[giocatoreCorrente] = 4; // Se il giocatore atterra sulla casella 7, viene spostato alla casella 4
+                    alert("Il giocatore " + (giocatoreCorrente + 1) + " è passato dalla posizione 7 alla 4"); // Mostra un messaggio di avviso
+                    break;
+                // Ripeti lo stesso processo per altre caselle speciali
+                case 9:
+                    posizioneGiocatori[giocatoreCorrente] = 13;
+                    alert("Il giocatore " + (giocatoreCorrente + 1) + " è passato dalla posizione 13 alla 9");
+                    break;
+                case 5:
+                    posizioneGiocatori[giocatoreCorrente] = 16;
+                    alert("Il giocatore " + (giocatoreCorrente + 1) + " è passato dalla posizione 5 alla 16");
+                    break;
+                case 21:
+                    posizioneGiocatori[giocatoreCorrente] = 23;
+                    alert("Il giocatore " + (giocatoreCorrente + 1) + " è passato dalla posizione 21 alla 23");
+                    break;
+                case 35:
+                    posizioneGiocatori[giocatoreCorrente] = 22;
+                    alert("Il giocatore " + (giocatoreCorrente + 1) + " è passato dalla posizione 35 alla 22");
+                    break;
+                case 70:
+                    posizioneGiocatori[giocatoreCorrente] = 34;
+                    alert("Il giocatore " + (giocatoreCorrente + 1) + " è passato dalla posizione 70 alla 34");
+                    break;
+                case 99:
+                    posizioneGiocatori[giocatoreCorrente] = 24;
+                    alert("Il giocatore " + (giocatoreCorrente + 1) + " è passato dalla posizione 99 alla 24");
+                    break;
+                case 60:
+                    posizioneGiocatori[giocatoreCorrente] = 40;
+                    alert("Il giocatore " + (giocatoreCorrente + 1) + " è passato dalla posizione 60 alla 40");
+                    break;
+                case 42:
+                    posizioneGiocatori[giocatoreCorrente] = 46;
+                    alert("Il giocatore " + (giocatoreCorrente + 1) + " è passato dalla posizione 42 alla 46");
+                    break;
+                case 74:
+                    posizioneGiocatori[giocatoreCorrente] = 54;
+                    alert("Il giocatore " + (giocatoreCorrente + 1) + " è passato dalla posizione 74 alla 54");
+                    break;
+                case 69:
+                    posizioneGiocatori[giocatoreCorrente] = 73;
+                    alert("Il giocatore " + (giocatoreCorrente + 1) + " è passato dalla posizione 69 alla 73");
+                    break;
+                case 62:
+                    posizioneGiocatori[giocatoreCorrente] = 78;
+                    alert("Il giocatore " + (giocatoreCorrente + 1) + " è passato dalla posizione 62 alla 78");
+                    break;
+                case 90:
+                    posizioneGiocatori[giocatoreCorrente] = 84;
+                    alert("Il giocatore " + (giocatoreCorrente + 1) + " è passato dalla posizione 90 alla 84");
+                    break;
+                case 94:
+                    posizioneGiocatori[giocatoreCorrente] = 96;
+                    alert("Il giocatore " + (giocatoreCorrente + 1) + " è passato dalla posizione 94 alla 96");
+                    break;
+            }
+
+            // Se il giocatore corrente raggiunge o supera la casella 100
+            if (posizioneGiocatori[giocatoreCorrente] >= 100) 
+            {
+                posizioneGiocatori[giocatoreCorrente] = 100; // Imposta la posizione del giocatore a 100
+                document.getElementById("messaggioVittoria").textContent = "Il giocatore " + (giocatoreCorrente + 1) + " ha vinto!"; // Imposta il messaggio di vittoria
+                apriModale(); // Apre la finestra modale per la vittoria
+            }
+
+            disegnaTabellone(); // Aggiorna il tabellone di gioco
+            giocatoreCorrente++; // Passa al prossimo giocatore
+            if (giocatoreCorrente >= numGiocatori) 
+            { // Se tutti i giocatori hanno giocato
+                giocatoreCorrente = 0; // Resetta il contatore dei giocatori
+            }
+        }
+
+
+        /* Funzione per disegnare il tabellone di gioco */
+        function disegnaTabellone() 
+        {
+            // Seleziona tutte le caselle del tabellone
+            var caselle = document.querySelectorAll('.casella');
+            // Ciclo per aggiornare il contenuto di ciascuna casella
+            for (var i = 0; i < caselle.length; i++) 
+            {
+                var casella = caselle[i]; // Seleziona la casella corrente
+                var numeroCasella = parseInt(casella.getAttribute('data-numero')); // Ottiene il numero della casella
+                casella.innerHTML = numeroCasella; // Aggiorna il contenuto della casella con il numero
+                casella.innerHTML += "<div class='giocatore'></div>"; // Aggiunge un elemento giocatore vuoto alla casella
+            }
+            // Ciclo per posizionare i giocatori nelle caselle corrette
+            for (var k = 0; k < numGiocatori; k++) 
+            {
+                var posizione = posizioneGiocatori[k]; // Ottiene la posizione del giocatore corrente
+                if (posizione > 0 && posizione <= 100) 
+                { // Verifica se la posizione è valida
+                    var casella = document.querySelector(".casella[data-numero='" + posizione + "']"); // Trova la casella corrispondente alla posizione
+                    if (casella) 
+                    { // Verifica se la casella è valida
+                        var pedina = document.createElement('div'); // Crea un nuovo elemento per la pedina del giocatore
+                        pedina.classList.add('giocatore'); // Aggiunge la classe 'giocatore' all'elemento pedina
+                        pedina.innerHTML = ['&#x265a;', '&#x265b;', '&#x265c;', '&#x265e;'][k]; // Imposta l'icona della pedina del giocatore
+                        pedina.style.color = pedineGiocatori[k]; // Imposta il colore dell'icona della pedina
+                        casella.querySelector('.giocatore').appendChild(pedina); // Aggiunge l'icona della pedina alla casella
+                    }
+                }
+            }
+        }
+
+        var modale = document.getElementById("myModal");
+
+        function apriModale() 
+        {
+            modale.style.display = "block";
+        }
+
+        function chiudiModale() 
+        {
+            modale.style.display = "none";
+            setTimeout(function() 
+            {
+                window.location.reload();
+            }, 3000);
+        }
+    </script>
+</body>
+
+</html>
