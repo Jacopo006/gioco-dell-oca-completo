@@ -52,7 +52,7 @@
             /* Riga del tabellone invertita */
             .fila.reversed 
             {
-                flex-direction: row-reverse; /* Orienta i figli in una riga invertita */
+                flex-direction: row-reverse; 
             }
 
             /* Singola casella del tabellone */
@@ -170,6 +170,13 @@
 
         function chiediNumeroGiocatori() 
         {
+            // DA APPROFINDIRE
+            // . vs #
+            // innerHTML
+            // classList
+            // .display
+            // parseInt
+
             // Chiede all'utente di inserire il numero di giocatori
             numGiocatori = prompt("Inserisci il numero di giocatori (da 1 a 4):");         
             // Controlla se il numero inserito è valido
@@ -245,60 +252,46 @@
             {
                 case 7:
                     posizioneGiocatori[giocatoreCorrente] = 4; // Se il giocatore atterra sulla casella 7, viene spostato alla casella 4
-                    alert("Il giocatore " + (giocatoreCorrente + 1) + " è passato dalla posizione 7 alla 4"); // Mostra un messaggio di avviso
                     break;
                 // Ripeti lo stesso processo per altre caselle speciali
                 case 9:
                     posizioneGiocatori[giocatoreCorrente] = 13;
-                    alert("Il giocatore " + (giocatoreCorrente + 1) + " è passato dalla posizione 13 alla 9");
                     break;
                 case 5:
                     posizioneGiocatori[giocatoreCorrente] = 16;
-                    alert("Il giocatore " + (giocatoreCorrente + 1) + " è passato dalla posizione 5 alla 16");
                     break;
                 case 21:
                     posizioneGiocatori[giocatoreCorrente] = 23;
-                    alert("Il giocatore " + (giocatoreCorrente + 1) + " è passato dalla posizione 21 alla 23");
                     break;
                 case 35:
                     posizioneGiocatori[giocatoreCorrente] = 22;
-                    alert("Il giocatore " + (giocatoreCorrente + 1) + " è passato dalla posizione 35 alla 22");
                     break;
                 case 70:
                     posizioneGiocatori[giocatoreCorrente] = 34;
-                    alert("Il giocatore " + (giocatoreCorrente + 1) + " è passato dalla posizione 70 alla 34");
                     break;
                 case 99:
                     posizioneGiocatori[giocatoreCorrente] = 24;
-                    alert("Il giocatore " + (giocatoreCorrente + 1) + " è passato dalla posizione 99 alla 24");
                     break;
                 case 60:
                     posizioneGiocatori[giocatoreCorrente] = 40;
-                    alert("Il giocatore " + (giocatoreCorrente + 1) + " è passato dalla posizione 60 alla 40");
                     break;
                 case 42:
                     posizioneGiocatori[giocatoreCorrente] = 46;
-                    alert("Il giocatore " + (giocatoreCorrente + 1) + " è passato dalla posizione 42 alla 46");
                     break;
                 case 74:
                     posizioneGiocatori[giocatoreCorrente] = 54;
-                    alert("Il giocatore " + (giocatoreCorrente + 1) + " è passato dalla posizione 74 alla 54");
                     break;
                 case 69:
                     posizioneGiocatori[giocatoreCorrente] = 73;
-                    alert("Il giocatore " + (giocatoreCorrente + 1) + " è passato dalla posizione 69 alla 73");
                     break;
                 case 62:
                     posizioneGiocatori[giocatoreCorrente] = 78;
-                    alert("Il giocatore " + (giocatoreCorrente + 1) + " è passato dalla posizione 62 alla 78");
                     break;
                 case 90:
                     posizioneGiocatori[giocatoreCorrente] = 84;
-                    alert("Il giocatore " + (giocatoreCorrente + 1) + " è passato dalla posizione 90 alla 84");
                     break;
                 case 94:
                     posizioneGiocatori[giocatoreCorrente] = 96;
-                    alert("Il giocatore " + (giocatoreCorrente + 1) + " è passato dalla posizione 94 alla 96");
                     break;
             }
 
