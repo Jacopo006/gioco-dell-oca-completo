@@ -133,9 +133,9 @@
             /* Pulsante "chiedigiocatori" */
             .chiedigiocatori 
             {
-                width: 500px; /* Larghezza del pulsante */
-                height: 200px; /* Altezza del pulsante */
-                font-size: 70px; /* Dimensione del testo */
+                width: 400px; /* Larghezza del pulsante */
+                height: 100px; /* Altezza del pulsante */
+                font-size: 50px; /* Dimensione del testo */
             }
 
 
@@ -151,10 +151,10 @@
         <button onclick="muoviGiocatore()">Prossimo Giocatore</button>
     </div>
 
-    <div class="dado">
+    <div class="dado" style="display: none;">
         <img id="immagine-dado" src="" alt="Dado">
     </div>
-
+    
     <div id="myModal" class="modal">
         <div class="modal-content">
             <h2 id="messaggioVittoria"></h2>
@@ -170,13 +170,6 @@
 
         function chiediNumeroGiocatori() 
         {
-            // DA APPROFINDIRE
-            // . vs #
-            // innerHTML
-            // classList
-            // .display
-            // parseInt
-
             // Chiede all'utente di inserire il numero di giocatori
             numGiocatori = prompt("Inserisci il numero di giocatori (da 1 a 4):");         
             // Controlla se il numero inserito è valido
@@ -240,9 +233,13 @@
             var dado = Math.floor(Math.random() * 6) + 1; // Genera un numero casuale da 1 a 6 per il dado
             var immagineDado = document.getElementById("immagine-dado"); // Seleziona l'elemento immagine del dado
 
+            var dadoContainer = document.querySelector('.dado');
+            dadoContainer.style.display = "block"; // Mostra l'elemento contenitore del dado
+
             // Aggiorna l'immagine del dado
             immagineDado.src = "dado" + dado + ".png"; // Imposta il percorso dell'immagine del dado
             immagineDado.alt = "Dado che mostra " + dado; // Imposta l'attributo 'alt' dell'immagine del dado
+
 
             var avanzamento = dado; // Imposta l'avanzamento del giocatore in base al risultato del dado
             posizioneGiocatori[giocatoreCorrente] += avanzamento; // Aggiorna la posizione del giocatore corrente
